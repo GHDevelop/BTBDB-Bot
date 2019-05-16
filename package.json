@@ -1,0 +1,30 @@
+{
+  "name": "btbdb",
+  "description": "A flexible discord bot for all user's needs.",
+  "version": "1.0.0",
+  "main": "boot.js",
+  "license": "ISC",
+  "authors": {
+    "Garrett Haines": "https://github.com/GHDevelop"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GHDevelop/BTBDB-Bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/GHDevelop/BTBDB-Bot/issues"
+  },
+  "homepage": "https://github.com/GHDevelop/BTBDB-Bot#readme",
+  "scripts": {
+    "compile_once": "build.bat",
+    "compile_auto": "watch.bat"
+  },
+  "dependencies": {
+    "@types/mocha": "^5.2.6",
+    "discord.js": "^11.5.0",
+    "jimp": "^0.6.4",
+    "lodash": "^4.17.11",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {}
+}
