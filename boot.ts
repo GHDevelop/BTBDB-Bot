@@ -1,8 +1,7 @@
 import * as discord from 'discord.js'
-
 import { Logger } from './src/base/debug/logger'
-
 import auth from './auth.json'
+import { CommandManager } from './src/base/module_management/command_manager';
 
 class Boot {
     constructor() {
@@ -15,7 +14,7 @@ class Boot {
             Logger.logError("something's wrong");
         });
 
-        this.pong(bot);
+        //this.pong(bot);
     }
 
     private pong(bot: discord.Client) {
@@ -25,7 +24,7 @@ class Boot {
                 let cmd = args[0];
                 switch (cmd) {
                     case 'ping':
-                        message.channel.send(`pong`);
+                        message.channel.send(CommandManager.getCommandList());
                 }
             }
         });

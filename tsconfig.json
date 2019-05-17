@@ -6,9 +6,16 @@
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
+        "baseUrl": "./src/",
         "outDir": "./dist/",
         "resolveJsonModule": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "paths": {
+            "commandsPattern": [
+                "modules/*/command/"
+            ]
+        }
     },
     "compileOnSave": true,
     "include": [

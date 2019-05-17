@@ -21,11 +21,11 @@ export class Logger {
      * Sets up all loggers used in the bot by default. This currently includes the console log, file log, and error file log
      */
     public static setupLoggers(){
-        Logger.setupLogger('info', consoleLogFormat);
+        Logger.setupLogger('debug', consoleLogFormat);
         Logger.addTransports([new winston.transports.Console]);
         Logger.addTransports(Logger.getFileTransports([
             {name: 'error.log', level: 'error'},
-            {name: 'all.log', level: 'info'}
+            {name: 'all.log', level: 'debug'}
         ]));
     }
 
@@ -86,10 +86,6 @@ export class Logger {
 
     public static logInfo(msg: string){
         this.logger.info(msg);
-    }
-
-    public static logNotice(msg: string){
-        this.logger.notice(msg);
     }
 
     public static logWarning(msg: string){
