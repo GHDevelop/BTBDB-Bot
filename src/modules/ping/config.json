@@ -1,0 +1,9 @@
+{
+    "ping": {
+        "names": [
+            "ping",
+            "response",
+            "delay"
+        ]
+    }
+}

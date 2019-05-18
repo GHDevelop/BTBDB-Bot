@@ -10,23 +10,11 @@ class Boot {
         let bot : discord.Client = new discord.Client();
         bot.login(auth.token).then((msg : string) => {
             Logger.logInfo(`Logged in as: ${bot.user.username}-(${bot.user.id})`);
+
+            let commandManager = new CommandManager();
+            commandManager.loadCommands(bot);
         }, (err : string) => {
             Logger.logError("something's wrong");
-        });
-
-        //this.pong(bot);
-    }
-
-    private pong(bot: discord.Client) {
-        bot.on('message', function (message: discord.Message) {
-            if (message.content.substring(0, 1) == '!') {
-                let args = message.content.substring(1).split(' ');
-                let cmd = args[0];
-                switch (cmd) {
-                    case 'ping':
-                        message.channel.send(CommandManager.getCommandList());
-                }
-            }
         });
     }
 }

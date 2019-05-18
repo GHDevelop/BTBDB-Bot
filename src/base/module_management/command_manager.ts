@@ -1,66 +1,64 @@
 import * as discord from 'discord.js'
-import * as fs from 'fs'
-import * as path from 'path'
 import { Logger } from '../debug/logger'
-import { Command } from '../abstract/command'
+import { BaseManager } from './base_manager';
+import { Command } from '../module_base/command'
+import { DiscordCommandInfo } from '../interface/command_info'
 
-const baseCommandDirectory = '../../modules';
-const commandDirectory = 'command';
+import config from '../../../config.json';
 
-export class CommandManager {
-    private static commandsList : Command[];
+export class CommandManager extends BaseManager<Command>{
 
-    public static getCommandList(){
-        //Reset command list
-        this.commandsList = [];
-
-        let filepath = path.join(__dirname, baseCommandDirectory);
-        let files : string[] = CommandManager.getPathToModuleFolders(filepath);
-
-        CommandManager.getCommandsForModule(files, filepath);
+    protected checkIfInstanceOf(objectOfType : any){
+        return objectOfType instanceof Command;
     }
 
-    private static getCommandsForModule(files: string[], filepath: string) {
-        files.forEach(file => {
-            let commandPath = path.join(filepath, file, commandDirectory);
-            if (fs.existsSync(commandPath)) {
-                let commandDirectoryFilenames = fs.readdirSync(commandPath);
+    public loadCommands(bot: discord.Client){
+        this.getCommandList(config.ModulePaths.modulePath, config.ModulePaths.commandPath);
+        this.runFiles(bot);
+    }
 
-                commandDirectoryFilenames.forEach(commandFilename => {
-                    try {
-                        let commandFile = require(path.join(commandPath, commandFilename));
+    protected runFiles(bot: discord.Client){
+        let commandsWithAlias = this.GetCommandNames();
 
-                        for (let className in commandFile) {
-                            //Apparently this grabs the entire script, or at least each class in it
-                            let commandType = commandFile[className];
+        bot.on('message', msg => {
+            if (msg.content.substring(0, 1) === config.Command.signal){
+                let args = msg.content.substring(1).split(' ');
 
-                            //and that's recognized as a function
-                            if (typeof commandType === 'function') {
-                                let currentCommand = new commandType();
-
-                                //Make sure that any commands added actually extend "Command", which is found at src/base/abstract
-                                if (currentCommand instanceof Command) {
-                                    this.commandsList.push(currentCommand);
-                                    Logger.logInfo(`${commandFilename} successfully added`);
-                                }
-                            }
+                commandsWithAlias.forEach(alias => {
+                    if (args[0] === alias.name){
+                        let commandInfo : DiscordCommandInfo = {
+                            attachments: msg.attachments,
+                            author: msg.author,
+                            channel: msg.channel,
+                            content: msg.content,
+                            createdAt: msg.createdAt,
+                            embeds: msg.embeds,
+                            guild: msg.guild,
+                            id: msg.id,
+                            authorGuildMember: msg.member,
+                            mentions: msg.mentions,
+                            message: msg,
+                            system: msg.system
                         }
+                        alias.command.processCommand(commandInfo)
                     }
-                    catch (err) {
-                        Logger.logError(`${commandFilename} does not extend Command or something`);
-                        Logger.logError(err);
-                    }
-                });
-            }
-            else {
-                Logger.logError(`no command directory for ${file} module`);
+                })
             }
         });
     }
 
-    private static getPathToModuleFolders(filepath: string): string[] {
-        return fs.readdirSync(filepath)
-                .filter(file => fs.statSync(path.join(filepath, file))
-                .isDirectory());
+    private GetCommandNames() : {name: string, command: Command}[] {
+        let commandsWithAlias: {
+            name: string;
+            command: Command;
+        }[] = [];
+
+        this.classList.forEach(command => {
+            command.getData().names.forEach(name => {
+                commandsWithAlias.push({ name: name, command: command });
+            });
+        });
+
+        return commandsWithAlias;
     }
 }

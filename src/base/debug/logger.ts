@@ -1,14 +1,27 @@
 import * as winston from 'winston';
 import { Format } from 'logform';
+import config from '../../../config.json';
 
-//TODO: move to config file, figure out how to store and use formats in json
-const consoleLogFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} [${label}] ${level}: ${message}`;
+//#region log_format
+const logFormat = winston.format.printf(({ level, message, label, timestamp }) => {
+    return formatLog(level, message, label, timestamp);
 });
 
-const fileLogFormat = winston.format.printf(({ level, message, label, timestamp }) => {
-    return `${timestamp} [${label}] ${level}: ${message}`;
-});
+function formatLog(level: string, message: string, label: any, timestamp: any) {
+    let str : string = config.Logger.logFormat;
+    let replaceParams = [
+        { replace: '{level}', with: level },
+        { replace: '{message}', with: message },
+        { replace: '{label}', with: label },
+        { replace: '{timestamp}', with: timestamp } ];
+
+    replaceParams.forEach(entry => {
+        str = str.replace(entry.replace, entry.with);
+    })
+
+    return str;
+}
+//#endregion
 
 /**
  * Easy manager for Winston logger
@@ -21,7 +34,7 @@ export class Logger {
      * Sets up all loggers used in the bot by default. This currently includes the console log, file log, and error file log
      */
     public static setupLoggers(){
-        Logger.setupLogger('debug', consoleLogFormat);
+        Logger.setupLogger('debug', logFormat);
         Logger.addTransports([new winston.transports.Console]);
         Logger.addTransports(Logger.getFileTransports([
             {name: 'error.log', level: 'error'},

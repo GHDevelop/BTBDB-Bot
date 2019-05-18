@@ -1,0 +1,13 @@
+{
+    "Command": {
+        "signal": "!"
+    },
+    "Logger": {
+        "logFormat": "{timestamp} [{label}] {level}: {message}"
+    },
+    "ModulePaths": {
+        "modulePath": "../../modules",
+        "commandPath": "command",
+        "passivePath": "passive"
+    }
+}
