@@ -11,17 +11,13 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "paths": {
-            "commandsPattern": [
-                "modules/*/command/"
-            ]
-        }
     },
     "compileOnSave": true,
     "include": [
         "src/**/*.ts", "boot.ts"
     ],
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "examples"
     ]
 }

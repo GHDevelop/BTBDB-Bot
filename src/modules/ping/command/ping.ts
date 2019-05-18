@@ -3,7 +3,6 @@ import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { Logger } from "../../../base/debug/logger";
 
 import config from '../config.json';
-import * as fs from "fs";
 
 export class Ping extends Command{
     
