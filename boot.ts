@@ -9,7 +9,7 @@ class Boot {
 
         let bot : discord.Client = new discord.Client();
         bot.login(auth.token).then((msg : string) => {
-            Logger.logInfo(`Logged in as: ${bot.user.username}-(${bot.user.id})`);
+            Logger.logInfo(`Logged in as: ${bot.user.tag}`);
 
             let commandManager = new CommandManager();
             commandManager.loadCommands(bot);

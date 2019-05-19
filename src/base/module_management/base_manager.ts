@@ -29,9 +29,6 @@ export abstract class BaseManager<ClassType>{
         let modules : string[] = this.getPathToModuleFolders(pathToModules);
         let scriptFilepaths = this.getPathToFileFolder(pathToModules, modules, fileDirectory);
         let scriptFiles = this.getFilesInFolder(scriptFilepaths);
-        scriptFiles.forEach(path => {
-            Logger.logDebug(path.filename);
-        })
         this.classList = this.getCommandsFromFile(scriptFiles);
     }
 
@@ -116,13 +113,16 @@ export abstract class BaseManager<ClassType>{
         scriptFilepaths.forEach(filepath => {
             let scriptFilenames = fs.readdirSync(filepath);
             scriptFilenames.forEach(scriptFilename => {
-                try{
-                    let scriptFile = require(path.join(filepath, scriptFilename));
-                    scriptFiles.push({file: scriptFile, filename: scriptFilename});
-                }
-                catch(err){
-                    Logger.logError(`there appears to have been an issue loading ${scriptFilename}`);
-                    Logger.logError(err);
+                if (scriptFilename.endsWith('.js'))
+                {
+                    try{
+                        let scriptFile = require(path.join(filepath, scriptFilename));
+                        scriptFiles.push({file: scriptFile, filename: scriptFilename});
+                    }
+                    catch(err){
+                        Logger.logError(`there appears to have been an issue loading ${scriptFilename}`);
+                        Logger.logError(err);
+                    }
                 }
             });
         });
