@@ -16,7 +16,11 @@ export class Ping extends Command{
     }
 
     public processCommand(info: DiscordCommandInfo) {
-        let ping = new Date().getTime() - info.createdAt.valueOf();
-        info.channel.send(`**${ping}**ms`);
+        //string in info.channel.send is meaningless here. As long as it isn't empty it will make no difference
+        info.channel.send(config.ping.pingMessage).then(msg => {
+            let botMsg = msg as discord.Message;
+            let ping = botMsg.createdAt.valueOf() - info.createdAt.valueOf();
+            botMsg.edit(`${config.ping.pingMessage} **${ping}**ms`);
+        })
     }
 }

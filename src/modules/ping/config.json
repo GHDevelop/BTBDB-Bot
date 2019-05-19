@@ -4,6 +4,7 @@
             "ping",
             "response",
             "delay"
-        ]
+        ],
+        "pingMessage": "⏰ Your delay is"
     }
 }

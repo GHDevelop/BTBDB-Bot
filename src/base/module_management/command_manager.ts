@@ -39,7 +39,6 @@ export class CommandManager extends BaseManager<Command>{
                             //string is error
                             try {
                                 let argumentsFromMessage = this.getArgumentsFromMessage(alias, args, bot, msg);
-                                Logger.logDebug('Hello');
     
                                 let commandInfo : DiscordCommandInfo = {
                                     arguments: argumentsFromMessage,
