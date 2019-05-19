@@ -1,20 +1,17 @@
-import {DiscordCommandInfo} from '../interface/command_info'
-import {Logger} from '../debug/logger'
+import {DiscordCommandInfo} from '../interface/command_info';
+import {CommandProperties} from '../interface/command_properties';
+import {Logger} from '../debug/logger';
 
 export abstract class Command{
 
-    protected abstract configData : {
-        names : string[];
-        arguments : string[];
-    }
+    protected abstract configData : CommandProperties
 
     protected constructor(){
         //Does nothing. Prevents error when running config in children, which requires super()
         this.setConfigData();
     }
 
-    public getData(): {names: string[], arguments: string[]}{
-        Logger.logInfo(this.configData.names[0]);
+    public getData(): CommandProperties{
         return this.configData;
     }
 

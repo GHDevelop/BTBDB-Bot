@@ -1,0 +1,26 @@
+{
+    "exampleModule": {
+        "names": [
+            "example",
+            "example_module"
+        ],
+        "arguments": [
+            {
+                "name": "example_one",
+                "type": "number",
+                "required": true
+            },
+            {
+                "name": "example_two",
+                "type": "mention",
+                "required": false
+            },
+            {
+                "name": "example_three",
+                "type": "string",
+                "required": false,
+                "default": "donut"
+            }
+        ]
+    }
+}
