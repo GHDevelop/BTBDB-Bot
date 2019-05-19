@@ -17,4 +17,4 @@ export interface DiscordCommandInfo {
     system: boolean;
 }
 
-export type ArgumentTypes = number | string | boolean | discord.User | discord.Role | discord.Channel
+export type ArgumentTypes = number | string | boolean | discord.GuildMember | discord.Role | discord.Channel

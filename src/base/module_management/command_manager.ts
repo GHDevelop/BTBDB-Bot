@@ -99,7 +99,6 @@ export class CommandManager extends BaseManager<Command>{
         let commandArgs = alias.command.getData().arguments;
 
         commandArgs.forEach(currentArgument => {
-            Logger.logDebug(args.length.toString());
             if (currentArgument.isUnlimited !== true)
             {
                 args = this.handleLimitedArguments(currentArgument, args, bot, msg, argsList);
@@ -121,7 +120,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param msg 
      * @param argsList 
      */
-    private handleLimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, string | number | boolean | discord.User | discord.Role | discord.Channel | ArgumentTypes[]>) {
+    private handleLimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
         let convertedArgumentInfo: CommandArgumentInfo | null;
         convertedArgumentInfo = this.convertArgumentInfo(currentArgument.type, args, bot, msg);
         let processedArg = this.processArgumentInfo(convertedArgumentInfo, currentArgument.name, args, currentArgument.required, currentArgument.default);
@@ -145,7 +144,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param msg 
      * @param argsList 
      */
-    private handleUnlimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, string | number | boolean | discord.User | discord.Role | discord.Channel | ArgumentTypes[]>) {
+    private handleUnlimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
         let argArray: ArgumentTypes[] = [];
         while (true) {
             let convertedArgumentInfo: CommandArgumentInfo | null;
@@ -192,7 +191,7 @@ export class CommandManager extends BaseManager<Command>{
             case ArgTypesEnum.Phrase:
                 return this.findPhraseInMessage(args);
             case ArgTypesEnum.Mention:
-                return this.findMentionInMessage(args, bot);
+                return this.findMentionInMessage(args, bot, msg);
             case ArgTypesEnum.Role:
                 return this.findRoleInMessage(args, msg);
             case ArgTypesEnum.Channel:
@@ -286,7 +285,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findMentionInMessage(args: string[], bot: discord.Client) : CommandArgumentInfo | null {
+    private findMentionInMessage(args: string[], bot: discord.Client, msg: discord.Message) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             const matches = args[index].match(/^<@!?(\d+)>$/);
 
@@ -295,7 +294,8 @@ export class CommandManager extends BaseManager<Command>{
                 const user = bot.users.get(id);
 
                 if (user !== undefined){
-                    return { argument: user, index: index };
+                    const member = msg.guild.member(user);
+                    return { argument: member, index: index };
                 }
             }
         }
@@ -325,6 +325,7 @@ export class CommandManager extends BaseManager<Command>{
             phraseStatement.indexes.push(index);
 
             if (args[index].endsWith('.')){
+                phraseStatement.phrase = phraseStatement.phrase.slice(0, -1);
                 index = args.length;
             }
 

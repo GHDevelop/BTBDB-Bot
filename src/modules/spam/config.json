@@ -1,0 +1,45 @@
+{
+    "spam": {
+        "names": [
+            "spam",
+            "evil"
+        ],
+        "arguments": [
+            {
+                "name": "victim",
+                "description": "the user to spam, as a mention",
+                "type": "mention",
+                "required": true
+            },
+            {
+                "name": "number",
+                "description": "the number of messages to send before stopping",
+                "type": "number",
+                "required": false,
+                "default": 100
+            },
+            {
+                "name": "frequency",
+                "description": "the frequency with which to send messages, in seconds",
+                "type": "number",
+                "required": false,
+                "default": 20
+            },
+            {
+                "name": "messages",
+                "description": "the list of messages that the command will choose from",
+                "type": "phrase",
+                "required": false,
+                "default": "The idiot who decided to spam you forgot to tell me what to spam you with",
+                "isUnlimited": true
+            }
+        ],
+        "time_measurements": {
+            "milliseconds": 1,
+            "seconds": 1000,
+            "minutes": 60000,
+            "hours": 3600000,
+            "days": 86400000
+        }
+    }
+}

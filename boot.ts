@@ -14,7 +14,7 @@ class Boot {
             let commandManager = new CommandManager();
             commandManager.loadCommands(bot);
         }, (err : string) => {
-            Logger.logError("something's wrong");
+            Logger.logError("Failed to log in");
         });
     }
 }

@@ -2,6 +2,7 @@ export interface CommandProperties{
     names : string[];
     arguments : {
         name: string, 
+        description?: string,
         type: string, 
         required?: boolean, 
         default?: any,
