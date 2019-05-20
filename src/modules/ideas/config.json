@@ -1,0 +1,34 @@
+{
+    "ideas": {
+        "names": [
+            "ideas",
+            "idea",
+            "todo",
+            "whatsnext"
+        ],
+        "arguments": [
+            {
+                "name": "action",
+                "description": "the action to perform with the ideas set, can be add, remove, or view",
+                "type": "string",
+                "required": true
+            },
+            {
+                "name": "title",
+                "description": "the title of the idea to save",
+                "type": "string",
+                "required": false
+            },
+            {
+                "name": "description",
+                "description": "details about the idea",
+                "type": "phrase",
+                "required": false
+            }
+        ],
+        "output_info": {
+            "title": "💡 Ideas for Bot",
+            "description": "add your own ideas with !ideas add <title (1 word)> <description>"
+        }
+    }
+}
