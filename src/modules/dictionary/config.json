@@ -1,0 +1,79 @@
+{
+    "dictionary": {
+        "names": [
+            "dictionary",
+            "dict",
+            "define",
+            "word"
+        ],
+        "arguments": [
+            {
+                "name": "update",
+                "description": "guarantee that the definition for the word will be pulled from the API and not the cache, even if the word has been searched before",
+                "type": "boolean",
+                "required": false,
+                "default": false
+            },
+            {
+                "name": "word",
+                "description": "the word to define",
+                "type": "phrase",
+                "required": true
+            }
+        ],
+        "api": {
+            "baseUrl": "https://api.datamuse.com/words",
+            "spelledLike": "sp=",
+            "meansLike": "ml=",
+            "synonym": "rel_syn=",
+            "antonym": "rel_ant=",
+            "metadata": "md=",
+            "definition": "d",
+            "partOfSpeech": "p",
+            "syllables": "s",
+            "pronunciation": "r",
+            "frequency": "f"
+        },
+        "apiReturn": {
+            "partsOfSpeech": [
+                {
+                    "value": "n",
+                    "meaning": "noun"
+                },
+                {
+                    "value": "v",
+                    "meaning": "verb"
+                },
+                {
+                    "value": "adj",
+                    "meaning": "adjective"
+                },
+                {
+                    "value": "adv",
+                    "meaning": "adverb"
+                },
+                {
+                    "value": "u",
+                    "meaning": "unknown"
+                }
+            ],
+            "pronunciationPrefix": "pron:",
+            "frequencyPrefix": "f:",
+            "frequencyIsOutOf": 1000000
+        },
+        "outputProperties": {
+            "capitalizeWord": true,
+            "displayNumSyllables": true,
+            "pronunciation": {
+                "removeNumbers": true,
+                "replaceSpacesWith": "-",
+                "display": true
+            },
+            "frequency": {
+                "decimalPlaces": 9,
+                "display": true
+            },
+            "outputIcon": "📚"
+        }
+    }
+}

@@ -37,5 +37,6 @@ export class ExampleCommand extends Command { //all commands must extend Command
     //Method that processes the command. This is the method the bot will call when the command is recognized. DiscordCommandInfo is the data type included above, used to make accessing the information from the command message a little easier
     public processCommand(info: DiscordCommandInfo) {
         //Whatever you want to do with the command
+        //Info contains the message with the command statement, the arguments from this.configData.arguments in a usable format, the bot's client, and a number of shortcuts to message parameters
     }
 }

@@ -20,6 +20,6 @@
     "exclude": [
         "node_modules",
         "examples",
-        "modules/ideas/storage/ideas.json"
+        "src/modules/ideas/storage/ideas.json"
     ]
 }

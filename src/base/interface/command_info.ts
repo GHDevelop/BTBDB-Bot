@@ -9,7 +9,7 @@ export interface DiscordCommandInfo {
     content: string;
     createdAt: Date;
     embeds: Array<discord.MessageEmbed>;
-    guild: discord.Guild | null; //the server
+    guild: discord.Guild | null; //the chat server
     id: discord.Snowflake;
     authorGuildMember: discord.GuildMember | null; //the author as a guild member
     mentions: discord.MessageMentions;
