@@ -1,0 +1,34 @@
+{
+    "pizza_time": {
+        "names": [
+            "pizza_time",
+            "pizzaTime",
+            "PizzaTime",
+            "pizza"
+        ],
+        "links": [
+            "https://www.youtube.com/watch?v=gUqH6Weyr2M",
+            "https://www.youtube.com/watch?v=lpvT-Fciu-4",
+            "https://i.redd.it/quoifauecklz.gif",
+            "https://i.gifer.com/2P7O.gif",
+            "https://twitter.com/HiTopFilms/status/1130877018986487808",
+            "https://media1.tenor.com/images/7a71a41ed97deac3853402c2b747895d/tenor.gif?itemid=5523507",
+            "https://media.giphy.com/media/QSgIne0FkO8KI/giphy.gif",
+            "https://www.youtube.com/watch?v=gUqH6Weyr2M"
+    
+        ],
+        "emotes": {
+            "pizza": "🍕",
+            "p": "🅿",
+            "i": "ℹ",
+            "z": "🇿",
+            "z2": "💤",
+            "a": "🅰",
+            "t": "🇹",
+            "i2": "🇮",
+            "m": "Ⓜ",
+            "e": "🇪",
+            "confetti": "🎊"
+        }
+    }
+}
