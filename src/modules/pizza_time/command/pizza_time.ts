@@ -17,7 +17,7 @@ export class PizzaTime extends Command{
 
     public processCommand(info: DiscordCommandInfo) {
         let emotes = config.pizza_time.emotes;
-        let message = `${emotes.confetti}${emotes.pizza}${emotes.p}${emotes.i}${emotes.z}${emotes.z}${emotes.a}        ${emotes.t}${emotes.i}${emotes.m}${emotes.e}${emotes.pizza}${emotes.confetti}`;
+        let message = `${emotes.confetti} ${emotes.pizza} ${emotes.p} ${emotes.i} ${emotes.z} ${emotes.z} ${emotes.a}         ${emotes.t} ${emotes.i} ${emotes.m} ${emotes.e} ${emotes.pizza} ${emotes.confetti}`;
 
         this.pizzaTimeMessage(info, message);
         this.pizzaTimeMessage(info, "@everyone");
