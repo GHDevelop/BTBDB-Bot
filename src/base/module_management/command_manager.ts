@@ -75,11 +75,13 @@ export class CommandManager extends BaseManager<Command>{
             command: Command;
         }[] = [];
 
-        this.classList.forEach(command => {
-            command.getData().names.forEach(name => {
-                commandsWithAlias.push({ name: name, command: command });
-            });
-        });
+        this.moduleList.forEach(module => {
+            this.classList[module].forEach(command => {
+                command.getData().names.forEach(name => {
+                    commandsWithAlias.push({ name: name, command: command });
+                });
+            })
+        })
 
         return commandsWithAlias;
     }

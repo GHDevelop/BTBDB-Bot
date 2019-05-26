@@ -2,10 +2,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { Logger } from '../debug/logger'
 import { Client } from 'discord.js';
-
+import { stringify } from 'querystring';
 
 export abstract class BaseManager<ClassType>{
-    protected classList : ClassType[];
+    protected moduleList : string[] = []; //Used to allow forEach loops through classList
+    protected classList : Record<string, ClassType[]> = {};
 
     /**
      * Workaround for instanceof check, which doesn't work with generic types. Should be return objectOfType instanceof ClassType (whatever that's defined as in child)
@@ -29,7 +30,9 @@ export abstract class BaseManager<ClassType>{
         let modules : string[] = this.getPathToModuleFolders(pathToModules);
         let scriptFilepaths = this.getPathToFileFolder(pathToModules, modules, fileDirectory);
         let scriptFiles = this.getFilesInFolder(scriptFilepaths);
-        this.classList = this.getCommandsFromFile(scriptFiles);
+        let classAndModules = this.getClassesFromFile(scriptFiles);
+        this.classList = classAndModules.classList;
+        this.moduleList = classAndModules.moduleList;
     }
 
     /**
@@ -37,8 +40,9 @@ export abstract class BaseManager<ClassType>{
      * 
      * @param scriptFiles 
      */
-    private getCommandsFromFile(scriptFiles: {file: any, filename: string}[]) {
-        let classItems : ClassType[] = [];
+    private getClassesFromFile(scriptFiles: { module: string, file: any, filename: string }[]): {classList: Record<string, ClassType[]>, moduleList: string[] } {
+        let classItems : Record<string, ClassType[]> = {};
+        let modules : string[] = [];
 
         scriptFiles.forEach(scriptFile => {
             try {
@@ -51,8 +55,13 @@ export abstract class BaseManager<ClassType>{
                         let objectOfType = new scriptType();
 
                         if (this.checkIfInstanceOf(objectOfType)) {
-                            classItems.push(objectOfType);
-                            Logger.logInfo(`${scriptFile.filename} successfully added`);
+                            if (classItems[scriptFile.module] === undefined){
+                                classItems[scriptFile.module] = [];
+                                modules.push(scriptFile.module);
+                            }
+
+                            classItems[scriptFile.module].push(objectOfType);
+                            Logger.logInfo(`${scriptFile.filename} successfully added to module ${scriptFile.module}`);
                         }
                     }
                 }
@@ -63,7 +72,23 @@ export abstract class BaseManager<ClassType>{
             }
         });
 
-        return classItems;
+        return { classList: classItems, moduleList: modules };
+    }
+
+    private addOrExpandModule(classItems: { module: string; class: ClassType[]; }[], scriptFile: { module: string; file: any; filename: string; }, objectOfType: any) {
+        let modulePresent = false;
+        for (let index = 0; index < classItems.length; index++) {
+            if (classItems[index].module === scriptFile.module) {
+                classItems[index].class.push(objectOfType);
+                Logger.logInfo(`${scriptFile.filename} successfully added to module ${classItems[index].module}`);
+                modulePresent = true;
+            }
+        }
+
+        if (modulePresent === false) {
+            classItems.push({ module: scriptFile.module, class: [objectOfType] });
+            Logger.logInfo(`${scriptFile.module} added with ${scriptFile.filename}`);
+        }
     }
 
     //#region get_files_from_paths
@@ -86,12 +111,12 @@ export abstract class BaseManager<ClassType>{
      * @param modules 
      * @param fileDirectory 
      */
-    private getPathToFileFolder(pathToModules: string, modules: string[], fileDirectory: string) : string[]{
-        let scriptFilepaths: string[] = [];
+    private getPathToFileFolder(pathToModules: string, modules: string[], fileDirectory: string) : { module: string, path: string }[]{
+        let scriptFilepaths: { module: string, path: string }[] = [];
         modules.forEach(module => {
             let scriptPath = path.join(pathToModules, module, fileDirectory);
             if (fs.existsSync(scriptPath)){
-                scriptFilepaths.push(scriptPath);
+                scriptFilepaths.push({ module: module, path: scriptPath });
             }
             else {
                 Logger.logError(`no command directory for ${module} module`);
@@ -106,18 +131,18 @@ export abstract class BaseManager<ClassType>{
      * 
      * @param scriptFilepaths 
      */
-    private getFilesInFolder(scriptFilepaths: string[]) : {file: any, filename: string} []{
+    private getFilesInFolder(scriptFilepaths: { module: string, path: string }[]) : { module: string, file: any, filename: string }[]{
         //Filename field in data struct used exclusively for logging
-        let scriptFiles: {file: any, filename: string}[] = [];
+        let scriptFiles: { module: string, file: any, filename: string }[] = [];
         
         scriptFilepaths.forEach(filepath => {
-            let scriptFilenames = fs.readdirSync(filepath);
+            let scriptFilenames = fs.readdirSync(filepath.path);
             scriptFilenames.forEach(scriptFilename => {
                 if (scriptFilename.endsWith('.js'))
                 {
                     try{
-                        let scriptFile = require(path.join(filepath, scriptFilename));
-                        scriptFiles.push({file: scriptFile, filename: scriptFilename});
+                        let scriptFile = require(path.join(filepath.path, scriptFilename));
+                        scriptFiles.push({ module: filepath.module, file: scriptFile, filename: scriptFilename });
                     }
                     catch(err){
                         Logger.logError(`there appears to have been an issue loading ${scriptFilename}`);
