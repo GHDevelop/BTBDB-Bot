@@ -13,6 +13,7 @@ export class PizzaTime extends Command{
         super();
 
         this.configData.names = config.pizza_time.names;
+        this.configData.description = config.pizza_time.description;
     }
 
     public processCommand(info: DiscordCommandInfo) {
@@ -27,7 +28,7 @@ export class PizzaTime extends Command{
         })
     }
 
-    private pizzaTimeMessage(info: DiscordCommandInfo, toSend: string){
+    private async pizzaTimeMessage(info: DiscordCommandInfo, toSend: string){
         info.channel.send(toSend).then(msg => this.reactToPizzaMessage(msg as discord.Message));
     }
 

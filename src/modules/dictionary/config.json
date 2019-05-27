@@ -6,6 +6,7 @@
             "define",
             "word"
         ],
+        "description": "Uses the Datamuse API to get the definition of a word along with the word's syllable count, part of speech, and frequency within the english language",
         "arguments": [
             {
                 "name": "update",

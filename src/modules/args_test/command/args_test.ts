@@ -12,6 +12,7 @@ export class ArgsTest extends Command{
         super();
 
         this.configData.names = config.args_test.names;
+        this.configData.description = config.args_test.description;
         this.configData.arguments = config.args_test.arguments;
     }
 

@@ -5,6 +5,7 @@
             "response",
             "delay"
         ],
+        "description": "Shows the time it takes for the a message to be sent, received by the bot, and replied to by the bot in milliseconds",
         "pingMessage": "⏰ Your delay is"
     }
 }

@@ -3,10 +3,10 @@ import { Logger } from '../debug/logger'
 import { BaseManager } from './base_manager';
 import { Command } from '../module_base/command'
 import { DiscordCommandInfo, ArgumentTypes } from '../interface/command_info'
+import { CommandProperties } from '../interface/command_properties';
 
 import config from '../../../config.json';
 import { ArgTypesEnum } from '../enum/arg_type';
-import { isArray } from 'util';
 
 
 export interface CommandArgumentInfo { 
@@ -21,22 +21,28 @@ export class CommandManager extends BaseManager<Command>{
     }
 
     public loadCommands(bot: discord.Client){
-        this.getCommandList(config.ModulePaths.modulePath, config.ModulePaths.commandPath);
-        this.runFiles(bot);
+        if (this.moduleList.length === 0){
+            this.getCommandList(config.ModulePaths.modulePath, config.ModulePaths.commandPath);
+            this.giveCommandsAccessToManager();
+            this.runCommands(bot);
+        }
+        else {
+            Logger.logError(`Commands have already been loaded`);
+        }
     }
 
-    protected runFiles(bot: discord.Client){
-        let commandsWithAlias = this.getCommandNames();
+    protected async runCommands(bot: discord.Client){
+        let commandsWithAlias = this.getCommandWithNames();
 
         bot.on('message', msg => {
             if (msg.content.substring(0, 1) === config.Command.signal){
                 let args = msg.content.substring(1).split(' ');
 
                 commandsWithAlias.forEach(alias => {
-                    if (args[0] === alias.name){
+                    if (args[0] !== undefined && args[0].toLowerCase() === alias.name){
                         {
                             args.splice(0, 1);
-                            //string is error
+
                             try {
                                 let argumentsFromMessage = this.getArgumentsFromMessage(alias, args, bot, msg);
     
@@ -69,22 +75,62 @@ export class CommandManager extends BaseManager<Command>{
         });
     }
 
-    private getCommandNames() : {name: string, command: Command}[] {
+    /**
+     * Provides a list of command data organized by the containing module. This includes information such as the command's name, description, and arguments. Used primarily for "help" commands
+     */
+    public getCommandData() : { indexes: string[], data: Record<string, CommandProperties[]> } {
+        let commandData : Record<string, CommandProperties[]> = {};
+
+        this.moduleList.forEach(module => {
+            commandData[module] = [];
+
+            this.classList[module].forEach(command => {
+                commandData[module].push(command.getData());
+            });
+        });
+
+        return { indexes: this.moduleList, data: commandData };
+    }
+
+    private giveCommandsAccessToManager(){
+        this.moduleList.forEach(module => {
+            this.classList[module].forEach(command => {
+                command.setCommandManager(this);
+            })
+        })
+    }
+
+    //#region get_commands_internal
+    /**
+     * Gets each command along with the names used to call the command (for example, the ping command could be called with !ping or !delay)
+     */
+    private getCommandWithNames() : { name: string, command: Command }[] {
         let commandsWithAlias: {
             name: string;
             command: Command;
         }[] = [];
 
         this.moduleList.forEach(module => {
-            this.classList[module].forEach(command => {
-                command.getData().names.forEach(name => {
-                    commandsWithAlias.push({ name: name, command: command });
-                });
-            })
+            this.getCommandsInModule(module, commandsWithAlias);
         })
 
         return commandsWithAlias;
     }
+
+    /**
+     * Gets all the commands in a module with their name
+     * 
+     * @param module 
+     * @param commandsWithAlias 
+     */
+    private getCommandsInModule(module: string, commandsWithAlias: { name: string; command: Command; }[]) {
+        this.classList[module].forEach(command => {
+            command.getData().names.forEach(name => {
+                commandsWithAlias.push({ name: name, command: command });
+            });
+        });
+    }
+    //#endregion
 
     //#region arguments
     /**
@@ -242,7 +288,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param args 
      */
     private removeConvertedArgumentFromArgs(convertedArgumentInfo: CommandArgumentInfo, args: string[]) {
-        if (!isArray(convertedArgumentInfo.index)) {
+        if (!Array.isArray(convertedArgumentInfo.index)) {
             args.splice(convertedArgumentInfo.index, 1);
         }
         else {

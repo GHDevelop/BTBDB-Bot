@@ -14,6 +14,7 @@ export class Spam extends Command{
         super();
 
         this.configData.names = config.spam.names;
+        this.configData.description = config.spam.description;
         this.configData.arguments = config.spam.arguments;
     }
 

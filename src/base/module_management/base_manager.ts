@@ -15,7 +15,7 @@ export abstract class BaseManager<ClassType>{
      */
     protected abstract checkIfInstanceOf(objectOfType: any) : boolean;
 
-    protected abstract runFiles(bot: Client) : void;
+    protected abstract runCommands(bot: Client) : void;
 
     //#region load_commands
 

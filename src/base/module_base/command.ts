@@ -1,14 +1,20 @@
 import {DiscordCommandInfo} from '../interface/command_info';
 import {CommandProperties} from '../interface/command_properties';
 import {Logger} from '../debug/logger';
+import { CommandManager } from '../module_management/command_manager';
 
 export abstract class Command{
 
-    protected abstract configData : CommandProperties
+    protected abstract configData : CommandProperties;
+    private commandManager : CommandManager;
 
     protected constructor(){
         //Does nothing. Prevents error when running config in children, which requires super()
         this.setConfigData();
+    }
+
+    protected getCommandDataForHelp(){
+        return this.commandManager.getCommandData();
     }
 
     public getData(): CommandProperties{
@@ -17,7 +23,11 @@ export abstract class Command{
 
     public abstract processCommand(info: DiscordCommandInfo) : void;
 
+    public setCommandManager(manager: CommandManager){
+        this.commandManager = manager;
+    }
+
     private setConfigData() {
-        this.configData = {names: [], arguments: []}
+        this.configData = {names: [], description: '', arguments: []}
     }
 }

@@ -1,5 +1,6 @@
 export interface CommandProperties{
     names : string[];
+    description: string;
     arguments : {
         name: string, 
         description?: string,

@@ -17,6 +17,7 @@ export class Ideas extends Command{
         super();
 
         this.configData.names = config.ideas.names;
+        this.configData.description = config.ideas.description;
         this.configData.arguments = config.ideas.arguments;
     }
 

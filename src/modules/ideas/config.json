@@ -6,6 +6,7 @@
             "todo",
             "whatsnext"
         ],
+        "description": "Adds to, removes from, or views a list of ideas that may be implemented into this bot",
         "arguments": [
             {
                 "name": "action",

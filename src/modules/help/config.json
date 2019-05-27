@@ -1,0 +1,10 @@
+{
+    "help": {
+        "names": [
+            "help",
+            "assist",
+            "guide"
+        ],
+        "description": "Shows how to use the rest of the bot's commands"
+    }
+}

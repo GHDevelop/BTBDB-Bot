@@ -13,6 +13,7 @@ export class Ping extends Command{
         super();
 
         this.configData.names = config.ping.names;
+        this.configData.description = config.ping.description;
     }
 
     public processCommand(info: DiscordCommandInfo) {

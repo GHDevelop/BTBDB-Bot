@@ -2,10 +2,10 @@
     "pizza_time": {
         "names": [
             "pizza_time",
-            "pizzaTime",
-            "PizzaTime",
+            "pizzatime",
             "pizza"
         ],
+        "description": "it's pizza time",
         "links": [
             "https://www.youtube.com/watch?v=gUqH6Weyr2M",
             "https://www.youtube.com/watch?v=lpvT-Fciu-4",

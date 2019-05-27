@@ -26,6 +26,7 @@ export class Dictionary extends Command{
         super();
 
         this.configData.names = config.dictionary.names;
+        this.configData.description = config.dictionary.description;
         this.configData.arguments = config.dictionary.arguments;
     }
 
