@@ -1,0 +1,9 @@
+{
+    "exampleModule": {
+        "names": [
+            "example",
+            "example_module"
+        ],
+        "description": "example description"
+    }
+}

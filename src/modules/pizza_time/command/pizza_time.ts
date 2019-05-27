@@ -3,7 +3,7 @@ import { Command } from "../../../base/module_base/command";
 import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
-import config from '../config.json';
+import userconfig from '../userconfig.json';
 
 export class PizzaTime extends Command{
     
@@ -12,18 +12,18 @@ export class PizzaTime extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.pizza_time.names;
-        this.configData.description = config.pizza_time.description;
+        this.configData.names = userconfig.pizza_time.names;
+        this.configData.description = userconfig.pizza_time.description;
     }
 
     public processCommand(info: DiscordCommandInfo) {
-        let emotes = config.pizza_time.emotes;
+        let emotes = userconfig.pizza_time.emotes;
         let message = `${emotes.confetti} ${emotes.pizza} ${emotes.p} ${emotes.i} ${emotes.z} ${emotes.z} ${emotes.a}         ${emotes.t} ${emotes.i} ${emotes.m} ${emotes.e} ${emotes.pizza} ${emotes.confetti}`;
 
         this.pizzaTimeMessage(info, message);
         this.pizzaTimeMessage(info, "@everyone");
 
-        config.pizza_time.links.forEach(link => {
+        userconfig.pizza_time.links.forEach(link => {
             this.pizzaTimeMessage(info, link);
         })
     }
@@ -33,7 +33,7 @@ export class PizzaTime extends Command{
     }
 
     private async reactToPizzaMessage(msg: discord.Message){
-        let emotes = config.pizza_time.emotes;
+        let emotes = userconfig.pizza_time.emotes;
         let reactWith = [
             emotes.p,
             emotes.i,

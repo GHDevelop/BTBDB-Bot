@@ -1,11 +1,12 @@
-import * as discord from 'discord.js';
-import * as request from 'request';
 import { Command } from "../../../base/module_base/command";
 import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
+import config from '../config.json';
+import userconfig from '../userconfig.json';
+
+import * as request from 'request';
 import { EmbedColors } from '../../../base/enum/embed_colors';
-import config from "../config.json";
 
 export type WordInfo = {
     word: string,
@@ -25,8 +26,8 @@ export class Dictionary extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.dictionary.names;
-        this.configData.description = config.dictionary.description;
+        this.configData.names = userconfig.dictionary.names;
+        this.configData.description = userconfig.dictionary.description;
         this.configData.arguments = config.dictionary.arguments;
     }
 
@@ -36,7 +37,7 @@ export class Dictionary extends Command{
         let encodedWord = encodeURIComponent(word);
         let api = config.dictionary.api;
 
-        let datamuseUrl = `${api.baseUrl}?${api.spelledLike}${encodedWord}&${api.metadata}${api.definition}${api.syllables}${api.pronunciation}${api.frequency}`;
+        let datamuseUrl = `${userconfig.dictionary.datamuse_api_base}?${api.spelledLike}${encodedWord}&${api.metadata}${api.definition}${api.syllables}${api.pronunciation}${api.frequency}`;
 
         let req = request.get({ uri: datamuseUrl }, (error: any, response: request.Response, body: any) => {
             if (error){
@@ -185,12 +186,12 @@ export class Dictionary extends Command{
      * @param pronunciation 
      */
     private formatPronunciation(pronunciation: string) : string {
-        if (config.dictionary.outputProperties.pronunciation.removeNumbers)
+        if (userconfig.dictionary.outputProperties.pronunciation.removeNumbers)
         {
             pronunciation = pronunciation.replace(/[0-9]/g, '');
         }
-        pronunciation = pronunciation.replace(/ /g, config.dictionary.outputProperties.pronunciation.replaceSpacesWith);
-        if (pronunciation.endsWith(config.dictionary.outputProperties.pronunciation.replaceSpacesWith)){
+        pronunciation = pronunciation.replace(/ /g, userconfig.dictionary.outputProperties.pronunciation.replaceSpacesWith);
+        if (pronunciation.endsWith(userconfig.dictionary.outputProperties.pronunciation.replaceSpacesWith)){
             pronunciation = pronunciation.substr(0, pronunciation.length - 1);
         }
 
@@ -207,7 +208,7 @@ export class Dictionary extends Command{
         let frequency = this.parseFromTags(tags, config.dictionary.apiReturn.frequencyPrefix);
         if (frequency) {
             //+ converts toFixed output back to number, and also shaves off extra decimal places
-            return +((parseFloat(frequency) / config.dictionary.apiReturn.frequencyIsOutOf) * 100).toFixed(config.dictionary.outputProperties.frequency.decimalPlaces);
+            return +((parseFloat(frequency) / config.dictionary.apiReturn.frequencyIsOutOf) * 100).toFixed(userconfig.dictionary.outputProperties.frequency.decimalPlaces);
         }
 
         return undefined;
@@ -228,7 +229,7 @@ export class Dictionary extends Command{
         let wordAsOutput = this.convertWordForOutput(wordInfo.word);
         let embed = {
             color: EmbedColors.DARK_PURPLE,
-            title: `${config.dictionary.outputProperties.outputIcon} **${wordAsOutput}**`,
+            title: `${userconfig.dictionary.outputProperties.outputIcon} **${wordAsOutput}**`,
             description: this.getWordDescription(wordInfo),
             fields: this.convertDefinitionsToFields(wordInfo.definitions)
         }
@@ -245,7 +246,7 @@ export class Dictionary extends Command{
      * @param word 
      */
     private convertWordForOutput(word: string) : string {
-        if (config.dictionary.outputProperties.capitalizeWord){
+        if (userconfig.dictionary.outputProperties.capitalizeWord){
             return word.charAt(0).toUpperCase() + word.slice(1, undefined);
         }
         else {
@@ -262,24 +263,24 @@ export class Dictionary extends Command{
         let description: string = '';
 
         //Adds pronunciation to description
-        if (wordInfo.pronunciation && config.dictionary.outputProperties.pronunciation.display) {
+        if (wordInfo.pronunciation && userconfig.dictionary.outputProperties.pronunciation.display) {
             description += `Pronounced: ${wordInfo.pronunciation} `;
         }
 
         //Adds number of syllables to description
-        if (config.dictionary.outputProperties.displayNumSyllables)
+        if (userconfig.dictionary.outputProperties.displayNumSyllables)
         {
             description += `(${wordInfo.syllables} syllable`;
             description += wordInfo.syllables !== 1 ? 's)' : ')';
         }
 
         //Adds newline before frequency
-        if (description !== '' && config.dictionary.outputProperties.frequency.display){
+        if (description !== '' && userconfig.dictionary.outputProperties.frequency.display){
             description += '\n';
         }
 
         //Adds frequency to description
-        if (wordInfo.frequency && config.dictionary.outputProperties.frequency.display) {
+        if (wordInfo.frequency && userconfig.dictionary.outputProperties.frequency.display) {
             description += `Is found in ${wordInfo.frequency}% of English text`;
         }
 

@@ -1,0 +1,9 @@
+{
+    "spam": {
+        "names": [
+            "spam",
+            "evil"
+        ],
+        "description": "In order to use the forbidden command, you must be wise enough to understand it on your own"
+    }
+}

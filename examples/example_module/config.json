@@ -1,9 +1,5 @@
 {
     "exampleModule": {
-        "names": [
-            "example",
-            "example_module"
-        ],
         "arguments": [
             {
                 "name": "example_one",

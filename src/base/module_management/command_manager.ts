@@ -6,6 +6,7 @@ import { DiscordCommandInfo, ArgumentTypes } from '../interface/command_info'
 import { CommandProperties } from '../interface/command_properties';
 
 import config from '../../../config.json';
+import userconfig from '../../../userconfig.json';
 import { ArgTypesEnum } from '../enum/arg_type';
 
 
@@ -35,7 +36,7 @@ export class CommandManager extends BaseManager<Command>{
         let commandsWithAlias = this.getCommandWithNames();
 
         bot.on('message', msg => {
-            if (msg.content.substring(0, 1) === config.Command.signal){
+            if (msg.content.substring(0, 1) === userconfig.Command.signal){
                 let args = msg.content.substring(1).split(' ');
 
                 commandsWithAlias.forEach(alias => {

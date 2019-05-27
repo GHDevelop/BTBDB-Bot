@@ -1,12 +1,5 @@
 {
     "ideas": {
-        "names": [
-            "ideas",
-            "idea",
-            "todo",
-            "whatsnext"
-        ],
-        "description": "Adds to, removes from, or views a list of ideas that may be implemented into this bot",
         "arguments": [
             {
                 "name": "action",
@@ -26,10 +19,6 @@
                 "type": "phrase",
                 "required": false
             }
-        ],
-        "output_info": {
-            "title": "💡 Ideas for Bot",
-            "description": "add your own ideas with !ideas add <title (1 word)> <description>"
-        }
+        ]
     }
 }

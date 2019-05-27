@@ -1,12 +1,5 @@
 {
     "dictionary": {
-        "names": [
-            "dictionary",
-            "dict",
-            "define",
-            "word"
-        ],
-        "description": "Uses the Datamuse API to get the definition of a word along with the word's syllable count, part of speech, and frequency within the english language",
         "arguments": [
             {
                 "name": "update",
@@ -23,7 +16,6 @@
             }
         ],
         "api": {
-            "baseUrl": "https://api.datamuse.com/words",
             "spelledLike": "sp=",
             "meansLike": "ml=",
             "synonym": "rel_syn=",
@@ -61,20 +53,6 @@
             "pronunciationPrefix": "pron:",
             "frequencyPrefix": "f:",
             "frequencyIsOutOf": 1000000
-        },
-        "outputProperties": {
-            "capitalizeWord": true,
-            "displayNumSyllables": true,
-            "pronunciation": {
-                "removeNumbers": true,
-                "replaceSpacesWith": "-",
-                "display": true
-            },
-            "frequency": {
-                "decimalPlaces": 9,
-                "display": true
-            },
-            "outputIcon": "📚"
         }
     }
 }

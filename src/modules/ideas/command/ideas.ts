@@ -1,13 +1,15 @@
 import * as discord from 'discord.js';
-import * as fs from 'fs';
-import * as path from 'path';
 import { Command } from "../../../base/module_base/command";
 import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
+import config from '../config.json';
+import userconfig from '../userconfig.json';
+
+import * as fs from 'fs';
+import * as path from 'path';
 import { EmbedColors } from "../../../base/enum/embed_colors";
 import ideas from '../storage/ideas.json'; //index 0 of the array is used to retain type information. At no point in this command should it be edited or removed. tsconfig is set to ignore this file, remove it from exclude if the file has not been compiled yet.
-import config from '../config.json';
 
 export class Ideas extends Command{
     
@@ -16,8 +18,8 @@ export class Ideas extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.ideas.names;
-        this.configData.description = config.ideas.description;
+        this.configData.names = userconfig.ideas.names;
+        this.configData.description = userconfig.ideas.description;
         this.configData.arguments = config.ideas.arguments;
     }
 
@@ -170,8 +172,8 @@ export class Ideas extends Command{
 
         let embed = {
             color: EmbedColors.GOLD,
-            title: config.ideas.output_info.title,
-            description: config.ideas.output_info.description,
+            title: userconfig.ideas.output_info.title,
+            description: userconfig.ideas.output_info.description,
             fields: embedFields
         }
 

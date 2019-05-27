@@ -1,10 +1,12 @@
 import * as discord from 'discord.js';
-import * as lodash from 'lodash';
 import { Command } from "../../../base/module_base/command";
 import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
 import config from '../config.json';
+import userconfig from '../userconfig.json'
+
+import * as lodash from 'lodash';
 
 export class Spam extends Command{
     
@@ -13,8 +15,8 @@ export class Spam extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.spam.names;
-        this.configData.description = config.spam.description;
+        this.configData.names = userconfig.spam.names;
+        this.configData.description = userconfig.spam.description;
         this.configData.arguments = config.spam.arguments;
     }
 

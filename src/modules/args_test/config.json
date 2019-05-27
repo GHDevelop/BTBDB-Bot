@@ -1,10 +1,5 @@
 {
     "args_test": {
-        "names": [
-            "args",
-            "args_test"
-        ],
-        "description": "A debug command created solely to test argument loading.",
         "arguments": [
             {
                 "name": "number",

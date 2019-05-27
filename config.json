@@ -1,7 +1,4 @@
 {
-    "Command": {
-        "signal": "!"
-    },
     "Logger": {
         "logFormat": "{timestamp} [{label}] {level}: {message}"
     },

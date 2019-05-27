@@ -3,11 +3,11 @@ import { Command } from "../../../base/module_base/command";
 import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
-import config from '../config.json';
+import userconfig from '../userconfig.json';
 
 import { EmbedColors } from '../../../base/enum/embed_colors';
 import { ArgTypesEnum } from '../../../base/enum/arg_type';
-import globalConfig from '../../../../config.json'
+import globalUserconfig from '../../../../userconfig.json';
 
 export class Help extends Command{
     
@@ -16,8 +16,8 @@ export class Help extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.help.names;
-        this.configData.description = config.help.description;
+        this.configData.names = userconfig.help.names;
+        this.configData.description = userconfig.help.description;
     }
 
     public processCommand(info: DiscordCommandInfo) {
@@ -40,7 +40,7 @@ export class Help extends Command{
             embed.addField(module, `--------------------------------------------------------------------------------------`);
 
             commandData.data[module].forEach(command => {
-                let fieldTitle = `${globalConfig.Command.signal}${command.names[0]}`;
+                let fieldTitle = `${globalUserconfig.Command.signal}${command.names[0]}`;
                 command.arguments.forEach(argument => {
                     fieldTitle += ` <${argument.name}`;
                     fieldTitle += argument.required === true ? `>` : ` (optional)>`;

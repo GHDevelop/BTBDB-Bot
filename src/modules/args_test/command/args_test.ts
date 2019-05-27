@@ -3,6 +3,7 @@ import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
 import config from '../config.json';
+import userconfig from '../userconfig.json';
 
 export class ArgsTest extends Command{
     
@@ -11,8 +12,8 @@ export class ArgsTest extends Command{
     private constructor(){
         super();
 
-        this.configData.names = config.args_test.names;
-        this.configData.description = config.args_test.description;
+        this.configData.names = userconfig.args_test.names;
+        this.configData.description = userconfig.args_test.description;
         this.configData.arguments = config.args_test.arguments;
     }
 
