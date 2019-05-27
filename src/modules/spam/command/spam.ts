@@ -27,7 +27,7 @@ export class Spam extends Command{
         let messages = info.arguments['messages'] as string[];
         
         if (victim instanceof discord.User){
-            info.channel.send(`Cannot use spam in DM channel`);
+            info.channel.send(`Cannot use spam in DM channel or on a bot`);
             return;
         }
 
