@@ -21,11 +21,20 @@ export class Spam extends Command{
     }
 
     public processCommand(info: DiscordCommandInfo) {
-        let victim = info.arguments['victim'] as discord.GuildMember;
+        let victim = info.arguments['victim'] as discord.GuildMember | discord.User;
         let number = info.arguments['number'] as number;
         let frequency = info.arguments['frequency'] as number;
         let messages = info.arguments['messages'] as string[];
         
+        if (victim instanceof discord.User){
+            info.channel.send(`Cannot use spam in DM channel`);
+            return;
+        }
+
+        if (victim.user.bot === true){
+            info.channel.send(`Cannot spam a bot`);
+            return;
+        }
         if (info.message.deletable){
             info.message.delete();
         }

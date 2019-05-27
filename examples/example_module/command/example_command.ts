@@ -55,7 +55,7 @@ export class ExampleCommand extends Command { //all commands must extend Command
         //@ts-ignore
         let a = info.arguments['example_one'] as Number;
         //@ts-ignore
-        let b = info.argument['example_two'] as discord.GuildMember
+        let b = info.argument['example_two'] as discord.GuildMember | discord.User;
         //@ts-ignore
         let c = info.argument['example_three'] as string;
 
