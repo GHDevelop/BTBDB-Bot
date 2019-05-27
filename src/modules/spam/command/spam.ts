@@ -30,11 +30,7 @@ export class Spam extends Command{
             info.channel.send(`Cannot use spam in DM channel or on a bot`);
             return;
         }
-
-        if (victim.user.bot === true){
-            info.channel.send(`Cannot spam a bot`);
-            return;
-        }
+        
         if (info.message.deletable){
             info.message.delete();
         }
