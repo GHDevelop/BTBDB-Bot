@@ -4,7 +4,7 @@ import { DiscordCommandInfo } from "../../../base/interface/command_info";
 import { CommandProperties } from "../../../base/interface/command_properties";
 import { Logger } from "../../../base/debug/logger";
 import config from '../config.json';
-import userconfig from '../userconfig.json'
+import userconfig from '../userconfig.json';
 
 import * as lodash from 'lodash';
 

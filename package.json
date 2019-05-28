@@ -20,15 +20,23 @@
     "compile_auto": "watch.bat"
   },
   "dependencies": {
+    "@discordjs/uws": "^10.149.0",
     "@types/lodash": "^4.14.129",
     "@types/mocha": "^5.2.6",
     "@types/request": "^2.48.1",
+    "bufferutil": "^4.0.1",
     "discord.js": "^11.5.0",
+    "erlpack": "github:discordapp/erlpack",
+    "ffmpeg-binaries": "^4.0.0",
     "fs": "0.0.1-security",
     "jimp": "^0.6.4",
+    "libsodium-wrappers": "^0.7.3",
+    "node-opus": "^0.2.7",
+    "opusscript": "0.0.6",
     "request": "^2.88.0",
     "sqlite3": "^4.0.8",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "ytdl": "^0.11.1"
   },
   "devDependencies": {
     "@types/node": "^12.0.2"

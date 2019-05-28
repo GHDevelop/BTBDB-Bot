@@ -1,0 +1,12 @@
+{
+    "play": {
+        "arguments": [
+            {
+                "name": "url",
+                "description": "the url for the music to play",
+                "type": "string",
+                "required": true
+            }
+        ]
+    }
+}

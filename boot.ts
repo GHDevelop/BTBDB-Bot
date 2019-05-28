@@ -7,13 +7,19 @@ class Boot {
     constructor() {
         Logger.setupLoggers();
 
-        let bot : discord.Client = new discord.Client();
-        bot.login(auth.token).then((msg : string) => {
-            Logger.logInfo(`Logged in as: ${bot.user.tag}`);
+        this.login();
+    }
 
+    private login() {
+        let bot: discord.Client = new discord.Client();
+        bot.login(auth.token).then((msg: string) => {
+            Logger.logInfo(`Logged in as: ${bot.user.tag}`);
             let commandManager = new CommandManager();
             commandManager.loadCommands(bot);
-        }, (err : string) => {
+            process.on("beforeExit", function () {
+                bot.voiceConnections.clear();
+            });
+        }, (err: string) => {
             Logger.logError("Failed to log in");
         });
     }
