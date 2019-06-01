@@ -21,13 +21,18 @@ export class Spam extends Command{
     }
 
     public processCommand(info: DiscordCommandInfo) {
-        let victim = info.arguments['victim'] as discord.User;
+        let victim = info.arguments['victim'] as discord.GuildMember;
         let number = info.arguments['number'] as number;
         let frequency = info.arguments['frequency'] as number;
         let messages = info.arguments['messages'] as string[];
         
-        if (victim.bot){
-            info.channel.send(`Cannot use spam on a bot`);
+        if (victim.user === undefined){
+            info.channel.send(`Cannot use spam in DMs`);
+            return;
+        }
+
+        if (victim.user.bot){
+            info.channel.send(`Cannot spam bots`);
             return;
         }
 
@@ -35,7 +40,11 @@ export class Spam extends Command{
             info.message.delete();
         }
 
-        this.spamTime(victim, number, frequency, messages);
+        messages.forEach(message => {
+            Logger.logInfo(message);
+        })
+
+        this.spamTime(victim.user, number, frequency, messages);
     }
 
     private async spamTime(victim: discord.User, number: number, frequency: number, messages: string[]){

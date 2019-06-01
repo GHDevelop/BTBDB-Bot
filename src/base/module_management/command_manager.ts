@@ -343,7 +343,7 @@ export class CommandManager extends BaseManager<Command>{
                 const user = bot.users.get(id);
 
                 if (user !== undefined){
-                    if (!(msg instanceof discord.TextChannel)){
+                    if (!(msg.channel instanceof discord.TextChannel)){
                         return { argument: user, index: index };
                     }
                     const member = msg.guild.member(user);
