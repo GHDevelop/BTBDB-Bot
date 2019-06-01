@@ -21,23 +21,24 @@ export class Spam extends Command{
     }
 
     public processCommand(info: DiscordCommandInfo) {
-        let victim = info.arguments['victim'] as discord.GuildMember | discord.User;
+        let victim = info.arguments['victim'] as discord.User;
         let number = info.arguments['number'] as number;
         let frequency = info.arguments['frequency'] as number;
         let messages = info.arguments['messages'] as string[];
         
-        if (victim instanceof discord.User){
-            info.channel.send(`Cannot use spam in DM channel or on a bot`);
+        if (victim.bot){
+            info.channel.send(`Cannot use spam on a bot`);
             return;
         }
-        
+
         if (info.message.deletable){
             info.message.delete();
         }
+
         this.spamTime(victim, number, frequency, messages);
     }
 
-    private async spamTime(victim: discord.GuildMember, number: number, frequency: number, messages: string[]){
+    private async spamTime(victim: discord.User, number: number, frequency: number, messages: string[]){
 
         const sendMessageAfterDelay = (timer : number, message: string) => new Promise(resolve => setTimeout(() => {
             victim.send(message);

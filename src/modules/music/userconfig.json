@@ -7,6 +7,9 @@
         ],
         "description": "Plays a music track in a voice channel"
     },
+    "player": {
+        "volume": 0.5
+    },
     "errors": {
         "musicInDM": "Cannot use music features in DM channel or Group DM channel",
         "playWhileNotInVoiceChat": "Cannot play music while not in voice chat",

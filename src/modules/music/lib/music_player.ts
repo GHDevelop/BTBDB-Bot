@@ -4,7 +4,6 @@ import { Logger } from "../../../base/debug/logger";
 import config from '../config.json';
 import userconfig from '../userconfig.json';
 
-import * as fs from 'fs';
 import ytdl from 'ytdl-core';
 
 export class MusicPlayer {
@@ -13,12 +12,11 @@ export class MusicPlayer {
         if (video === undefined){
             Logger.logError(`no video`);
             return;
-        }
+        };
 
-        Logger.logInfo(vc.name);
         vc.join()
         .then((connection) => {
-            const dispatcher = connection.playStream(video);
+            const dispatcher = connection.playStream(video, {bitrate: 'auto', volume: userconfig.player.volume});
             dispatcher.on("end", end => {
                 vc.leave();
             })
