@@ -17,4 +17,9 @@ export interface DiscordCommandInfo {
     system: boolean;
 }
 
+export interface ArgumentWithIndex { 
+    argument: ArgumentTypes, 
+    index: number | number[]
+}
+
 export type ArgumentTypes = number | string | boolean | discord.User | discord.GuildMember | discord.Role | discord.Channel

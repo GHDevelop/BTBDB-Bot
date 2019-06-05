@@ -2,20 +2,16 @@ import * as discord from 'discord.js'
 import { Logger } from '../debug/logger'
 import { BaseManager } from './base_manager';
 import { Command } from '../module_base/command'
-import { DiscordCommandInfo, ArgumentTypes } from '../interface/command_info'
+import { DiscordCommandInfo, ArgumentTypes, ArgumentWithIndex } from '../interface/command_info'
 import { CommandProperties } from '../interface/command_properties';
 
 import config from '../../../config.json';
 import userconfig from '../../../userconfig.json';
 import { ArgTypesEnum } from '../enum/arg_type';
-
-
-export interface CommandArgumentInfo { 
-    argument: ArgumentTypes, 
-    index: number | number[]
-}
+import { DataParsers } from '../libs/data_parsers';
 
 export class CommandManager extends BaseManager{
+    protected static moduleList : string[] = []; //Used to allow forEach loops through commandList
     protected static commandList : Record<string, Command[]> = {};
 
     /**
@@ -170,7 +166,7 @@ export class CommandManager extends BaseManager{
      * @param argsList 
      */
     private static handleLimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
-        let convertedArgumentInfo: CommandArgumentInfo | null;
+        let convertedArgumentInfo: ArgumentWithIndex | null;
         convertedArgumentInfo = this.convertArgumentInfo(currentArgument.type, args, bot, msg);
         let processedArg = this.processArgumentInfo(convertedArgumentInfo, currentArgument.name, args, currentArgument.required, currentArgument.default);
         //error
@@ -196,7 +192,7 @@ export class CommandManager extends BaseManager{
     private static handleUnlimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
         let argArray: ArgumentTypes[] = [];
         while (true) {
-            let convertedArgumentInfo: CommandArgumentInfo | null;
+            let convertedArgumentInfo: ArgumentWithIndex | null;
             convertedArgumentInfo = this.convertArgumentInfo(currentArgument.type, args, bot, msg);
             let isUnlimited = argArray.length > 0 ? true : false;
             let processedArg = this.processArgumentInfo(convertedArgumentInfo, currentArgument.name, args, currentArgument.required, currentArgument.default, isUnlimited);
@@ -232,19 +228,19 @@ export class CommandManager extends BaseManager{
     private static convertArgumentInfo(type: string, args: string[], bot: discord.Client, msg: discord.Message){
         switch (type){
             case ArgTypesEnum.Number:
-                return this.findNumberInMessage(args);
+                return DataParsers.findNumberInMessage(args);
             case ArgTypesEnum.String:
-                return this.findStringInMessage(args);
+                return DataParsers.findStringInMessage(args);
             case ArgTypesEnum.Boolean:
-                return this.findBooleanInMessage(args);
+                return DataParsers.findBooleanInMessage(args);
             case ArgTypesEnum.Phrase:
-                return this.findPhraseInMessage(args);
+                return DataParsers.findPhraseInMessage(args);
             case ArgTypesEnum.Mention:
-                return this.findMentionInMessage(args, bot, msg);
+                return DataParsers.findMentionInMessage(args, bot, msg);
             case ArgTypesEnum.Role:
-                return this.findRoleInMessage(args, msg);
+                return DataParsers.findRoleInMessage(args, msg);
             case ArgTypesEnum.Channel:
-                return this.findChannelInMessage(args, bot);
+                return DataParsers.findChannelInMessage(args, bot);
             default:
                 return null;
         };
@@ -264,7 +260,7 @@ export class CommandManager extends BaseManager{
      * @param defaultValue 
      * @param isUnlimited 
      */
-    private static processArgumentInfo(convertedArgumentInfo: CommandArgumentInfo | null, argName: string, args: string[], required?: boolean, defaultValue?: any, isUnlimited?: boolean) :  { argument: ArgumentTypes, newArgs: string[] } | string | undefined {
+    private static processArgumentInfo(convertedArgumentInfo: ArgumentWithIndex | null, argName: string, args: string[], required?: boolean, defaultValue?: any, isUnlimited?: boolean) :  { argument: ArgumentTypes, newArgs: string[] } | string | undefined {
         if (convertedArgumentInfo === null){
             if (required === true){
                 return `Argument ${argName} is missing. This argument is required in order to use this command.`;
@@ -288,7 +284,7 @@ export class CommandManager extends BaseManager{
      * @param convertedArgumentInfo 
      * @param args 
      */
-    private static removeConvertedArgumentFromArgs(convertedArgumentInfo: CommandArgumentInfo, args: string[]) {
+    private static removeConvertedArgumentFromArgs(convertedArgumentInfo: ArgumentWithIndex, args: string[]) {
         if (!Array.isArray(convertedArgumentInfo.index)) {
             args.splice(convertedArgumentInfo.index, 1);
         }
@@ -302,123 +298,5 @@ export class CommandManager extends BaseManager{
             }
         }
     }
-
-    //#region cast_argument
-    private static findBooleanInMessage(args: string[]) : CommandArgumentInfo | null {
-        for (let index = 0; index < args.length; index++){
-            if (args[index] === 'true'){
-                return { argument: true, index: index };
-            }
-            else if (args[index] === 'false'){
-                return { argument: false, index: index };
-            }
-        }
-
-        return null;
-    }
-
-    private static findChannelInMessage(args: string[], bot: discord.Client) : CommandArgumentInfo | null {
-        for (let index = 0; index < args.length; index++){
-            const matches = args[index].match(/^<#(\d+)>$/);
-
-            if (matches !== null){
-                const id = matches[1];
-                const channel = bot.channels.get(id);
-
-                if (channel !== undefined){
-                    return { argument: channel, index: index };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static findMentionInMessage(args: string[], bot: discord.Client, msg: discord.Message) : CommandArgumentInfo | null {
-        for (let index = 0; index < args.length; index++){
-            const matches = args[index].match(/^<@!?(\d+)>$/);
-
-            if (matches !== null){
-                const id = matches[1];
-                const user = bot.users.get(id);
-
-                if (user !== undefined){
-                    if (!(msg.channel instanceof discord.TextChannel)){
-                        return { argument: user, index: index };
-                    }
-                    const member = msg.guild.member(user);
-                    return { argument: member, index: index };
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private static findNumberInMessage(args: string[]) : CommandArgumentInfo | null {
-        for (let index = 0; index < args.length; index++){
-            if (!isNaN(parseFloat(args[index]))){
-                return { argument: parseFloat(args[index]), index: index };
-            }
-        }
-
-        return null;
-    }
-
-    private static findPhraseInMessage(args: string[]) : CommandArgumentInfo | null {
-        let phraseStatement : { phrase: string, indexes: number[] } | null = null;
-
-        for (let index = 0; index < args.length; index++){
-            if (phraseStatement === null){
-                phraseStatement = { phrase: '', indexes: []};
-            }
-
-            phraseStatement.phrase += args[index];
-            phraseStatement.indexes.push(index);
-
-            if (args[index].endsWith('.')){
-                phraseStatement.phrase = phraseStatement.phrase.slice(0, -1);
-                index = args.length;
-            }
-
-            if (index < args.length - 1){
-                phraseStatement.phrase += ' ';
-            }
-        }
-
-        if (phraseStatement !== null)
-        {
-            return { argument: phraseStatement.phrase, index: phraseStatement.indexes };
-        }
-        else {
-            return null;
-        }
-    }
-
-    private static findRoleInMessage(args: string[], msg: discord.Message) : CommandArgumentInfo | null {
-        for (let index = 0; index < args.length; index++){
-            const matches = args[index].match(/^<@&(\d+)>$/);
-
-            if (matches !== null){
-                const id = matches[1];
-                const role = msg.guild.roles.get(id);
-
-                if (role !== undefined){
-                    return { argument: role, index: index };
-                }
-            }
-        }
-        
-        return null;
-    }
-
-    private static findStringInMessage(args: string[]) : CommandArgumentInfo | null {
-        if (args.length > 0){
-            return { argument: args[0], index: 0 };
-        }
-
-        return null;
-    }
-    //#endregion
     //#endregion
 }

@@ -5,7 +5,6 @@ import { Client } from 'discord.js';
 import { stringify } from 'querystring';
 
 export abstract class BaseManager{
-    protected static moduleList : string[] = []; //Used to allow forEach loops through classList
 
     //#region load_commands
 
