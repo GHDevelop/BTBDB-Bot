@@ -4,18 +4,8 @@ import { Logger } from '../debug/logger'
 import { Client } from 'discord.js';
 import { stringify } from 'querystring';
 
-export abstract class BaseManager<ClassType>{
-    protected moduleList : string[] = []; //Used to allow forEach loops through classList
-    protected classList : Record<string, ClassType[]> = {};
-
-    /**
-     * Workaround for instanceof check, which doesn't work with generic types. Should be return objectOfType instanceof ClassType (whatever that's defined as in child)
-     * 
-     * @param objectOfType 
-     */
-    protected abstract checkIfInstanceOf(objectOfType: any) : boolean;
-
-    protected abstract runCommands(bot: Client) : void;
+export abstract class BaseManager{
+    protected static moduleList : string[] = []; //Used to allow forEach loops through classList
 
     //#region load_commands
 
@@ -25,14 +15,13 @@ export abstract class BaseManager<ClassType>{
      * @param moduleDirectory 
      * @param fileDirectory 
      */
-    protected getCommandList(moduleDirectory : string, fileDirectory : string){
+    protected static getClassList<ClassType>(moduleDirectory : string, fileDirectory : string, className : string, instanfeofComparison : (param : any) => boolean){
         let pathToModules = path.join(__dirname, moduleDirectory);
         let modules : string[] = this.getPathToModuleFolders(pathToModules);
         let scriptFilepaths = this.getPathToFileFolder(pathToModules, modules, fileDirectory);
         let scriptFiles = this.getFilesInFolder(scriptFilepaths);
-        let classAndModules = this.getClassesFromFile(scriptFiles);
-        this.classList = classAndModules.classList;
-        this.moduleList = classAndModules.moduleList;
+        let classAndModules = this.getClassesFromFile<ClassType>(scriptFiles, className, instanfeofComparison);
+        return classAndModules;
     }
 
     /**
@@ -40,7 +29,7 @@ export abstract class BaseManager<ClassType>{
      * 
      * @param scriptFiles 
      */
-    private getClassesFromFile(scriptFiles: { module: string, file: any, filename: string }[]): {classList: Record<string, ClassType[]>, moduleList: string[] } {
+    private static getClassesFromFile<ClassType>(scriptFiles: { module: string, file: any, filename: string }[], className : string, instanceofComparison : (param : any) => boolean): {classList: Record<string, ClassType[]>, moduleList: string[] } {
         let classItems : Record<string, ClassType[]> = {};
         let modules : string[] = [];
 
@@ -54,7 +43,7 @@ export abstract class BaseManager<ClassType>{
                     if (typeof scriptType === 'function') {
                         let objectOfType = new scriptType();
 
-                        if (this.checkIfInstanceOf(objectOfType)) {
+                        if (instanceofComparison(objectOfType)) {
                             if (classItems[scriptFile.module] === undefined){
                                 classItems[scriptFile.module] = [];
                                 modules.push(scriptFile.module);
@@ -67,7 +56,7 @@ export abstract class BaseManager<ClassType>{
                 }
             }
             catch (err) {
-                Logger.logError(`${scriptFile} could not be converted correctly to ${this.classList.constructor.name}`);
+                Logger.logError(`${scriptFile} could not be converted correctly to ${className}`);
                 Logger.logError(err);
             }
         });
@@ -75,7 +64,7 @@ export abstract class BaseManager<ClassType>{
         return { classList: classItems, moduleList: modules };
     }
 
-    private addOrExpandModule(classItems: { module: string; class: ClassType[]; }[], scriptFile: { module: string; file: any; filename: string; }, objectOfType: any) {
+    private static addOrExpandModule<ClassType>(classItems: { module: string; class: ClassType[]; }[], scriptFile: { module: string; file: any; filename: string; }, objectOfType: any) {
         let modulePresent = false;
         for (let index = 0; index < classItems.length; index++) {
             if (classItems[index].module === scriptFile.module) {
@@ -98,7 +87,7 @@ export abstract class BaseManager<ClassType>{
      * 
      * @param filepath 
      */
-    private getPathToModuleFolders(filepath: string): string[] {
+    private static getPathToModuleFolders(filepath: string): string[] {
         return fs.readdirSync(filepath)
                 .filter(file => fs.statSync(path.join(filepath, file))
                 .isDirectory());
@@ -111,7 +100,7 @@ export abstract class BaseManager<ClassType>{
      * @param modules 
      * @param fileDirectory 
      */
-    private getPathToFileFolder(pathToModules: string, modules: string[], fileDirectory: string) : { module: string, path: string }[]{
+    private static getPathToFileFolder(pathToModules: string, modules: string[], fileDirectory: string) : { module: string, path: string }[]{
         let scriptFilepaths: { module: string, path: string }[] = [];
         modules.forEach(module => {
             let scriptPath = path.join(pathToModules, module, fileDirectory);
@@ -131,7 +120,7 @@ export abstract class BaseManager<ClassType>{
      * 
      * @param scriptFilepaths 
      */
-    private getFilesInFolder(scriptFilepaths: { module: string, path: string }[]) : { module: string, file: any, filename: string }[]{
+    private static getFilesInFolder(scriptFilepaths: { module: string, path: string }[]) : { module: string, file: any, filename: string }[]{
         //Filename field in data struct used exclusively for logging
         let scriptFiles: { module: string, file: any, filename: string }[] = [];
         

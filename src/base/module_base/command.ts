@@ -6,7 +6,6 @@ import { CommandManager } from '../module_management/command_manager';
 export abstract class Command{
 
     protected abstract configData : CommandProperties;
-    private commandManager : CommandManager;
 
     protected constructor(){
         //Does nothing. Prevents error when running config in children, which requires super()
@@ -14,7 +13,7 @@ export abstract class Command{
     }
 
     protected getCommandDataForHelp(){
-        return this.commandManager.getCommandData();
+        return CommandManager.getCommandData();
     }
 
     public getData(): CommandProperties{
@@ -22,10 +21,6 @@ export abstract class Command{
     }
 
     public abstract processCommand(info: DiscordCommandInfo) : void;
-
-    public setCommandManager(manager: CommandManager){
-        this.commandManager = manager;
-    }
 
     private setConfigData() {
         this.configData = {names: [], description: '', arguments: []}

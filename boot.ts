@@ -14,13 +14,16 @@ class Boot {
         let bot: discord.Client = new discord.Client();
         bot.login(auth.token).then((msg: string) => {
             Logger.logInfo(`Logged in as: ${bot.user.tag}`);
-            let commandManager = new CommandManager();
-            commandManager.loadCommands(bot);
-            process.on("beforeExit", function () {
-                bot.voiceConnections.clear();
-            });
+            CommandManager.loadCommands(bot);
+            this.setupExitOperations(bot);
         }, (err: string) => {
             Logger.logError("Failed to log in");
+        });
+    }
+
+    private setupExitOperations(bot: discord.Client) {
+        process.on("beforeExit", function () {
+            bot.voiceConnections.clear();
         });
     }
 }

@@ -15,16 +15,24 @@ export interface CommandArgumentInfo {
     index: number | number[]
 }
 
-export class CommandManager extends BaseManager<Command>{
+export class CommandManager extends BaseManager{
+    protected static commandList : Record<string, Command[]> = {};
 
-    protected checkIfInstanceOf(objectOfType : any){
+    /**
+     * Workaround used since generic types cannot be used with instanceof checks
+     * 
+     * @param objectOfType 
+     */
+    protected static checkIfInstanceOf(objectOfType : any){
         return objectOfType instanceof Command;
     }
 
-    public loadCommands(bot: discord.Client){
+    public static loadCommands(bot: discord.Client){
         if (this.moduleList.length === 0){
-            this.getCommandList(config.ModulePaths.modulePath, config.ModulePaths.commandPath);
-            this.giveCommandsAccessToManager();
+            let commandsWithModuleName = this.getClassList<Command>(config.ModulePaths.modulePath, config.ModulePaths.commandPath, Command.name, this.checkIfInstanceOf);
+            this.moduleList = commandsWithModuleName.moduleList;
+            this.commandList = commandsWithModuleName.classList;
+
             this.runCommands(bot);
         }
         else {
@@ -32,7 +40,7 @@ export class CommandManager extends BaseManager<Command>{
         }
     }
 
-    protected async runCommands(bot: discord.Client){
+    protected static async runCommands(bot: discord.Client){
         let commandsWithAlias = this.getCommandWithNames();
 
         bot.on('message', msg => {
@@ -79,13 +87,13 @@ export class CommandManager extends BaseManager<Command>{
     /**
      * Provides a list of command data organized by the containing module. This includes information such as the command's name, description, and arguments. Used primarily for "help" commands
      */
-    public getCommandData() : { indexes: string[], data: Record<string, CommandProperties[]> } {
+    public static getCommandData() : { indexes: string[], data: Record<string, CommandProperties[]> } {
         let commandData : Record<string, CommandProperties[]> = {};
 
         this.moduleList.forEach(module => {
             commandData[module] = [];
 
-            this.classList[module].forEach(command => {
+            this.commandList[module].forEach(command => {
                 commandData[module].push(command.getData());
             });
         });
@@ -93,19 +101,11 @@ export class CommandManager extends BaseManager<Command>{
         return { indexes: this.moduleList, data: commandData };
     }
 
-    private giveCommandsAccessToManager(){
-        this.moduleList.forEach(module => {
-            this.classList[module].forEach(command => {
-                command.setCommandManager(this);
-            })
-        })
-    }
-
     //#region get_commands_internal
     /**
      * Gets each command along with the names used to call the command (for example, the ping command could be called with !ping or !delay)
      */
-    private getCommandWithNames() : { name: string, command: Command }[] {
+    private static getCommandWithNames() : { name: string, command: Command }[] {
         let commandsWithAlias: {
             name: string;
             command: Command;
@@ -124,8 +124,8 @@ export class CommandManager extends BaseManager<Command>{
      * @param module 
      * @param commandsWithAlias 
      */
-    private getCommandsInModule(module: string, commandsWithAlias: { name: string; command: Command; }[]) {
-        this.classList[module].forEach(command => {
+    private static getCommandsInModule(module: string, commandsWithAlias: { name: string; command: Command; }[]) {
+        this.commandList[module].forEach(command => {
             command.getData().names.forEach(name => {
                 commandsWithAlias.push({ name: name, command: command });
             });
@@ -142,7 +142,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param bot 
      * @param msg 
      */
-    private getArgumentsFromMessage(alias: { name: string; command: Command; }, args: string[], bot: discord.Client, msg: discord.Message) : Record<string, ArgumentTypes | ArgumentTypes[]> {
+    private static getArgumentsFromMessage(alias: { name: string; command: Command; }, args: string[], bot: discord.Client, msg: discord.Message) : Record<string, ArgumentTypes | ArgumentTypes[]> {
         let argsList : Record<string, ArgumentTypes | ArgumentTypes[]> = {};
 
         let commandArgs = alias.command.getData().arguments;
@@ -169,7 +169,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param msg 
      * @param argsList 
      */
-    private handleLimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
+    private static handleLimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
         let convertedArgumentInfo: CommandArgumentInfo | null;
         convertedArgumentInfo = this.convertArgumentInfo(currentArgument.type, args, bot, msg);
         let processedArg = this.processArgumentInfo(convertedArgumentInfo, currentArgument.name, args, currentArgument.required, currentArgument.default);
@@ -193,7 +193,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param msg 
      * @param argsList 
      */
-    private handleUnlimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
+    private static handleUnlimitedArguments(currentArgument: { name: string; type: string; required?: boolean | undefined; default?: any; isUnlimited?: boolean | undefined; }, args: string[], bot: discord.Client, msg: discord.Message, argsList: Record<string, ArgumentTypes | ArgumentTypes[]>) {
         let argArray: ArgumentTypes[] = [];
         while (true) {
             let convertedArgumentInfo: CommandArgumentInfo | null;
@@ -229,7 +229,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param bot 
      * @param msg 
      */
-    private convertArgumentInfo(type: string, args: string[], bot: discord.Client, msg: discord.Message){
+    private static convertArgumentInfo(type: string, args: string[], bot: discord.Client, msg: discord.Message){
         switch (type){
             case ArgTypesEnum.Number:
                 return this.findNumberInMessage(args);
@@ -264,7 +264,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param defaultValue 
      * @param isUnlimited 
      */
-    private processArgumentInfo(convertedArgumentInfo: CommandArgumentInfo | null, argName: string, args: string[], required?: boolean, defaultValue?: any, isUnlimited?: boolean) :  { argument: ArgumentTypes, newArgs: string[] } | string | undefined {
+    private static processArgumentInfo(convertedArgumentInfo: CommandArgumentInfo | null, argName: string, args: string[], required?: boolean, defaultValue?: any, isUnlimited?: boolean) :  { argument: ArgumentTypes, newArgs: string[] } | string | undefined {
         if (convertedArgumentInfo === null){
             if (required === true){
                 return `Argument ${argName} is missing. This argument is required in order to use this command.`;
@@ -288,7 +288,7 @@ export class CommandManager extends BaseManager<Command>{
      * @param convertedArgumentInfo 
      * @param args 
      */
-    private removeConvertedArgumentFromArgs(convertedArgumentInfo: CommandArgumentInfo, args: string[]) {
+    private static removeConvertedArgumentFromArgs(convertedArgumentInfo: CommandArgumentInfo, args: string[]) {
         if (!Array.isArray(convertedArgumentInfo.index)) {
             args.splice(convertedArgumentInfo.index, 1);
         }
@@ -304,7 +304,7 @@ export class CommandManager extends BaseManager<Command>{
     }
 
     //#region cast_argument
-    private findBooleanInMessage(args: string[]) : CommandArgumentInfo | null {
+    private static findBooleanInMessage(args: string[]) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             if (args[index] === 'true'){
                 return { argument: true, index: index };
@@ -317,7 +317,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findChannelInMessage(args: string[], bot: discord.Client) : CommandArgumentInfo | null {
+    private static findChannelInMessage(args: string[], bot: discord.Client) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             const matches = args[index].match(/^<#(\d+)>$/);
 
@@ -334,7 +334,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findMentionInMessage(args: string[], bot: discord.Client, msg: discord.Message) : CommandArgumentInfo | null {
+    private static findMentionInMessage(args: string[], bot: discord.Client, msg: discord.Message) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             const matches = args[index].match(/^<@!?(\d+)>$/);
 
@@ -355,7 +355,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findNumberInMessage(args: string[]) : CommandArgumentInfo | null {
+    private static findNumberInMessage(args: string[]) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             if (!isNaN(parseFloat(args[index]))){
                 return { argument: parseFloat(args[index]), index: index };
@@ -365,7 +365,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findPhraseInMessage(args: string[]) : CommandArgumentInfo | null {
+    private static findPhraseInMessage(args: string[]) : CommandArgumentInfo | null {
         let phraseStatement : { phrase: string, indexes: number[] } | null = null;
 
         for (let index = 0; index < args.length; index++){
@@ -395,7 +395,7 @@ export class CommandManager extends BaseManager<Command>{
         }
     }
 
-    private findRoleInMessage(args: string[], msg: discord.Message) : CommandArgumentInfo | null {
+    private static findRoleInMessage(args: string[], msg: discord.Message) : CommandArgumentInfo | null {
         for (let index = 0; index < args.length; index++){
             const matches = args[index].match(/^<@&(\d+)>$/);
 
@@ -412,7 +412,7 @@ export class CommandManager extends BaseManager<Command>{
         return null;
     }
 
-    private findStringInMessage(args: string[]) : CommandArgumentInfo | null {
+    private static findStringInMessage(args: string[]) : CommandArgumentInfo | null {
         if (args.length > 0){
             return { argument: args[0], index: 0 };
         }
