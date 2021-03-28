@@ -40,17 +40,7 @@ export abstract class BaseManager{
 
                     //and that's recognized as a function
                     if (typeof scriptType === 'function') {
-                        let objectOfType = new scriptType();
-
-                        if (instanceofComparison(objectOfType)) {
-                            if (classItems[scriptFile.module] === undefined){
-                                classItems[scriptFile.module] = [];
-                                modules.push(scriptFile.module);
-                            }
-
-                            classItems[scriptFile.module].push(objectOfType);
-                            Logger.logInfo(`${scriptFile.filename} successfully added to module ${scriptFile.module}`);
-                        }
+                        BaseManager.getClassFromValidFile<ClassType>(scriptType, instanceofComparison, classItems, scriptFile, modules);
                     }
                 }
             }
@@ -61,6 +51,29 @@ export abstract class BaseManager{
         });
 
         return { classList: classItems, moduleList: modules };
+    }
+
+    /**
+     * adds a script file, used in getClassesFromFile
+     * 
+     * @param scriptType 
+     * @param instanceofComparison 
+     * @param classItems 
+     * @param scriptFile 
+     * @param modules 
+     */
+    private static getClassFromValidFile<ClassType>(scriptType: any, instanceofComparison: (param: any) => boolean, classItems: Record<string, ClassType[]>, scriptFile: { module: string; file: any; filename: string; }, modules: string[]) {
+        let objectOfType = new scriptType();
+
+        if (instanceofComparison(objectOfType)) {
+            if (classItems[scriptFile.module] === undefined) {
+                classItems[scriptFile.module] = [];
+                modules.push(scriptFile.module);
+            }
+
+            classItems[scriptFile.module].push(objectOfType);
+            Logger.logInfo(`${scriptFile.filename} successfully added to module ${scriptFile.module}`);
+        }
     }
 
     private static addOrExpandModule<ClassType>(classItems: { module: string; class: ClassType[]; }[], scriptFile: { module: string; file: any; filename: string; }, objectOfType: any) {
